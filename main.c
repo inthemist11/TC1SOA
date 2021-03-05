@@ -22,17 +22,31 @@ void *thread_simulation(void *direction)
     return NULL;
 }
 
-int main()
+int main(int argc, char **argv)
 {
-    srand(time(NULL));
-    pthread_t thread_id;
-    printf("Before Thread\n");
-
     int right_cars = 5;
     int left_cars = 5;
     int left_lambda = 5;
     int right_lambda = 5;
     int bridge_size_secs = 20;
+    
+    //Parameters parsing
+    if(argc > 2){
+        right_cars = atoi(argv[1]);
+        left_cars = atoi(argv[2]);        
+    }
+    if(argc > 4){
+    	right_lambda = atoi(argv[3]);
+    	left_lambda = atoi(argv[4]);
+    }
+    
+    printf("Parameters set at: East cars: %d, West cars: %d, East lambda: %d, West lambda: %d\n", right_cars, left_cars, right_lambda, left_lambda); 
+    
+    srand(time(NULL));
+    pthread_t thread_id;
+    printf("Before Thread\n");
+
+    
 
 
     double depart_time_left[left_cars];
