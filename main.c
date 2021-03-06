@@ -28,41 +28,49 @@ double ran_expo(double lambda, double current_time)
 //Función que ejecuta el thread
 void *thread_simulation(void *direction)
 {
-    printf("Car created with direction = %d\n", direction);
-
     pthread_t carId = pthread_self();
 
-    printf("Car id = %d\n", carId);
+    printf("\n");
+    printf("NUEVO CARRO ID: %d (%d) \n", carId, direction);
+    printf("\n");
 
     //Si el estado es diferente se espera a que esté el semaforo libre
-    if(state != direction)
+    if(state != direction && state != 0)
     {
-        printf("Va a esperar el semáforo %d %d\n", carId, direction);
+        printf("%d (%d) A. Voy a esperar el semáforo \n", carId, direction);
         sem_wait(&semaphore);
-        printf("Ya esperé el semáforo y está libre %d %d\n", carId, direction);
+        printf("%d (%d) B. Ya esperé el semáforo y estoy libre %d %d\n", carId, direction);
     }
     //Si el estado es 0 agarra el semaforo y le cambia el estado
     if(state == 0)
     {
-        printf("El puente está vació y voy a agarrar el semáforo %d %d\n", carId, direction);
+        printf("%d (%d) 1. El puente está vació, voy a agarrar el semáforo %d %d\n", carId, direction);
         sem_wait(&semaphore);
-        printf("Ya agarré el semáforo y voy a cambiar el estado %d %d\n", carId, direction);
+        printf("%d (%d) 2. Aagarré el semáforo y voy a cambiar el estado %d %d\n", carId, direction);
         state = direction;
+        printf("%d (%d) 3. Cambié el estado %d %d\n", carId, direction);
     }
+    
     //Actualiza el ultimo carro con el actual
-    printf("Actualizé el last car %d %d\n", carId, direction);
+    printf("%d (%d) 4. Actualicé el last\n", carId, direction);
     last = carId;
     //Pasa el puente
-    printf("Voy a pasar el puente %d %d\n", carId, direction);
+    printf("%d (%d) 6. Pasaré al puente\n", carId, direction);
     sleep(bridge_size_secs);
-    printf("Ya pasé el puente %d %d\n", carId, direction);
+    printf("%d (%d) 7. Ya pasé el puente\n", carId, direction);
+
     //Si es el último devuelve el estado y el semaforo
     if (last == carId)
     {
-        printf("Soy el último carro y voy a devolver el estado %d %d\n", carId, direction);
+        printf("%d (%d) X. Soy el último carro\n", carId, direction);
         state = 0;
         sem_post(&semaphore);
+        printf("%d (%d) Y. Devolví el semáforo  \n", carId, direction);
+    }else{
+        printf("%d (%d) 8. No fui el último carro\n", carId, direction);
     }
+    
+    printf("%d (%d) 9. Terminé el recorrido\n", carId, direction);
     return NULL;
 }
 
