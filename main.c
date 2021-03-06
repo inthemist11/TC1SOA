@@ -14,6 +14,8 @@ int state = 0;
 pthread_t last;
 int bridge_size_secs = 5;
 
+// Symbols to use in pretty prints 
+// 🟢 🟡 🔴 ➡️ ⬅️ 🚙
 
 // A normal C function that is executed as a thread
 // when its name is specified in pthread_create()
@@ -26,21 +28,28 @@ double ran_expo(double lambda, double current_time)
     return exp + current_time;
 }
 
+const char* directionSymbol(int direction)
+{
+    if (direction==1) return "der ➡️";
+    return "izq ⬅️";
+}
+
 //Función que ejecuta el thread
 void *thread_simulation(void *direction)
 {
     printf("\n");
-    printf("NUEVO CARRO ID: %d (%d) \n", pthread_self(), direction);
+    printf("[%d](%s) 🚙 NEW CAR near! \n", pthread_self(), directionSymbol(direction));
     printf("\n");
 
-   //Si el estado es diferente se espera a que esté el semaforo libre
+   // Si la dirección de vía del puente es distinta a la mía y no está vacío
+   // Espero a que esté el semaforo libre
     if(state != direction && state != 0)
     {
-        printf("%d (%d) 1. Voy a esperar el semáforo \n", pthread_self(), direction);
+        printf("[%d](%s) 1. Voy a esperar el semáforo \n", pthread_self(), directionSymbol(direction));
         if(direction == 1)
         {
             sem_wait(&semaphoreRigth);
-            printf("%d (%d) 2. Ya esperé el semáforo \n", pthread_self(), direction);
+            printf("[%d](%s) 2. Ya esperé el semáforo \n", pthread_self(), directionSymbol(direction));
             state = direction;
             
             sem_post(&semaphoreRigth);
@@ -48,7 +57,7 @@ void *thread_simulation(void *direction)
         else
         {
             sem_wait(&semaphoreLeft);
-            printf("%d (%d) 2. Ya esperé el semáforo \n", pthread_self(), direction);
+            printf("[%d](%s) 2. Ya esperé el semáforo \n", pthread_self(), directionSymbol(direction));
             state = direction;
             
             sem_post(&semaphoreLeft);
@@ -59,7 +68,7 @@ void *thread_simulation(void *direction)
         //Si el estado es 0 agarra el semaforo y le cambia el estado
         if(state == 0)
         {
-            printf("%d (%d) 1. El puente está vació, voy a agarrar el semáforo \n", pthread_self(), direction);
+            printf("[%d](%s) 1. El puente está vació, voy a agarrar el semáforo \n", pthread_self(), directionSymbol(direction));
             if(direction == 1)
             {
                 sem_wait(&semaphoreLeft);
@@ -68,7 +77,7 @@ void *thread_simulation(void *direction)
             {
                 sem_wait(&semaphoreRigth);
             }
-            printf("%d (%d) 2. Aagarré el semáforo y voy a cambiar el estado \n", pthread_self(), direction);
+            printf("[%d](%s) 2. Aagarré el semáforo y voy a cambiar el estado \n", pthread_self(), directionSymbol(direction));
             state = direction;
         }
         else
@@ -87,16 +96,16 @@ void *thread_simulation(void *direction)
     }
     
     //Actualiza el ultimo carro con el actual
-    printf("%d (%d) 3. Actualicé el last y pasaré el puente\n", pthread_self(), direction);
+    printf("[%d](%s) 3. Actualicé el last y pasaré el puente\n", pthread_self(), directionSymbol(direction));
     last = pthread_self();
     //Pasa el puente
     sleep(bridge_size_secs);
-    printf("%d (%d) 4. Ya pasé el puente\n", pthread_self(), direction);
+    printf("[%d](%s) 4. Ya pasé el puente\n", pthread_self(), directionSymbol(direction));
 
     //Si es el último devuelve el estado y el semaforo
     if (last == pthread_self())
     {
-        printf("%d (%d) 5. Soy el último carro y voy a retornar el semáforo\n", pthread_self(), direction);
+        printf("[%d](%s) 5. Soy el último carro y voy a retornar el semáforo\n", pthread_self(), directionSymbol(direction));
         state = 0;
         if(direction == 1)
         {
@@ -107,7 +116,7 @@ void *thread_simulation(void *direction)
             sem_post(&semaphoreRigth);
         }
     }else{
-        printf("%d (%d) 5. No fui el último carro\n", pthread_self(), direction);
+        printf("[%d](%s) 5. No fui el último carro\n", pthread_self(), directionSymbol(direction));
     }
     
     return NULL;
