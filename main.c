@@ -40,7 +40,6 @@ void *thread_simulation(void *direction)
         printf("%d (%d) A. Voy a esperar el semáforo \n", carId, direction);
         sem_wait(&semaphore);
         printf("%d (%d) B. Ya esperé el semáforo y estoy libre \n", carId, direction);
-        sem_post(&semaphore);
     }
     //Si el estado es 0 agarra el semaforo y le cambia el estado
     if(state == 0)
