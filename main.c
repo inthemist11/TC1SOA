@@ -25,7 +25,7 @@ double ran_expo(double lambda, double current_time)
     return exp + current_time;
 }
 
-void a (void *direction)
+void checkWake(void *direction)
 {
     sem_wait(&semaphore);
     if(state != direction && state != 0)
@@ -33,10 +33,9 @@ void a (void *direction)
         sem_post(&semaphore);
         printf("%d (%d) Voy a repetir \n", pthread_self(), direction);
         sleep(1);
-        a(direction);
+        checkWake(direction);
     }
 }
-
 
 //Función que ejecuta el thread
 void *thread_simulation(void *direction)
@@ -50,7 +49,7 @@ void *thread_simulation(void *direction)
     {
         printf("%d (%d) 1. Voy a esperar el semáforo \n", pthread_self(), direction);
         
-        a(direction);
+        checkWake(direction);
         printf("%d (%d) 2. Ya esperé el semáforo \n", pthread_self(), direction);
         state = direction;
         sem_post(&semaphore);
