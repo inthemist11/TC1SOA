@@ -39,16 +39,16 @@ void *thread_simulation(void *direction)
     {
         printf("%d (%d) A. Voy a esperar el semáforo \n", carId, direction);
         sem_wait(&semaphore);
-        printf("%d (%d) B. Ya esperé el semáforo y estoy libre %d %d\n", carId, direction);
+        printf("%d (%d) B. Ya esperé el semáforo y estoy libre \n", carId, direction);
     }
     //Si el estado es 0 agarra el semaforo y le cambia el estado
     if(state == 0)
     {
-        printf("%d (%d) 1. El puente está vació, voy a agarrar el semáforo %d %d\n", carId, direction);
+        printf("%d (%d) 1. El puente está vació, voy a agarrar el semáforo \n", carId, direction);
         sem_wait(&semaphore);
-        printf("%d (%d) 2. Aagarré el semáforo y voy a cambiar el estado %d %d\n", carId, direction);
+        printf("%d (%d) 2. Aagarré el semáforo y voy a cambiar el estado \n", carId, direction);
         state = direction;
-        printf("%d (%d) 3. Cambié el estado %d %d\n", carId, direction);
+        printf("%d (%d) 3. Cambié el estado \n", carId, direction);
     }
     
     //Actualiza el ultimo carro con el actual
