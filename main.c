@@ -27,15 +27,16 @@ double ran_expo(double lambda, double current_time)
 
 void *thread_simulation(void *direction)
 {
+    
     const char *directionSymbol;
     if (direction==1) directionSymbol = "Right ➡️"; else directionSymbol = "Left  ⬅️";
 
-    printf("\n%d (%s) Arrived a new car! 🚙💨 \n\n", pthread_self(), directionSymbol);
+    printf("\n%d (%s) Arrived a new car! 🚙💨 \n", pthread_self(), directionSymbol);
 
     if (state != direction && state != 0) //Entra si hay carros en dirección contraria pasando el puente
     {
         // printf("%d\t(%s)\t%d\t%d\tVoy a hacer fila\n", pthread_self(), directionSymbol);
-        printf("%d (%s) I'll wait 🔴 \n", pthread_self(), directionSymbol);
+        printf("%d (%s) I'll wait because bridge is in use 🔴 \n", pthread_self(), directionSymbol);
         direction == 1 ? sem_wait(&semaphoreRigth) : sem_wait(&semaphoreLeft); //Pide el semáforo
         direction == 1 ? sem_post(&semaphoreRigth) : sem_post(&semaphoreLeft); //Suelta el semáforo
         printf("%d (%s) Now is my turn, I'll prepare to pass 🟡 \n", pthread_self(), directionSymbol);
@@ -44,7 +45,7 @@ void *thread_simulation(void *direction)
     if (state == 0) //Entra si el puente está vacío
     {
         // printf("%d\t(%d)\t%d\t%d\tEl puente está vacío y voy a cambiar el estado\n", pthread_self(), direction, state, last);
-        printf(" %d (%s) I allow to begin the %s direction 🟢 🟢 \n", pthread_self(), directionSymbol, directionSymbol);
+        printf("%d (%s) I'm the fist, I allow the %s direction 🟢 🟢 \n", pthread_self(), directionSymbol, directionSymbol);
         // printf("Begin to pass the %s direction 🟢\n", directionSymbol);
         //Pide los dos semaforos
         sem_wait(&semaphoreRigth); 
@@ -54,21 +55,21 @@ void *thread_simulation(void *direction)
     }
     else //Entra si el puente está de nuestro lado
     {
-        printf(" %d (%s) It's my same direction 🟢 \n", pthread_self(), directionSymbol);
+        printf("%d (%s) It's my same direction 🟢 \n", pthread_self(), directionSymbol);
         // printf("%d\t(%d)\t%d\t%d\tEn el puente hay carros de mi misma dirección\n", pthread_self(), direction, state, last);
         direction == 1 ? sem_wait(&semaphoreRigth) : sem_wait(&semaphoreLeft); //Pide el semáforo
         direction == 1 ? sem_post(&semaphoreRigth) : sem_post(&semaphoreLeft); //Suelta el semáforo
     }
     last = pthread_self(); //Actualiza el último
     // printf("%d\t(%d)\t%d\t%d\tA4. Voy a pasar el puente\n", pthread_self(), direction, state, last);
-    printf(" %d (%s) I'll pass the bridge in a row, and now I'm the last 🟢 \n", pthread_self(), directionSymbol);
+    printf("%d (%s) I'll pass the bridge in a row, and now I'm the last 🟢 \n", pthread_self(), directionSymbol);
     sleep(bridge_size_secs); //Pasa el puente
     // printf("%d\t(%d)\t%d\t%d\tA5. Ya pasé el puente\n", pthread_self(), direction, state, last);
-    printf(" %d (%s) I passed the bridge 🟢 \n", pthread_self(), directionSymbol);
+    printf("%d (%s) I passed the bridge 🟢 \n", pthread_self(), directionSymbol);
     if (last == pthread_self()) //Valida si soy el último
     {
         state = 0;                                                             //Devuelve el puente
-        printf(" %d (%s) I was the last, the bridge is empty 🟡 \n", pthread_self(), directionSymbol);
+        printf("%d (%s) I was the last, the bridge is empty 🟡 \n\n", pthread_self(), directionSymbol);
         // printf("%d\t(%d)\t%d\t%d\tA6. El puente quedó libre\n", pthread_self(), direction, state, last);
         direction == 1 ? sem_post(&semaphoreLeft) : sem_post(&semaphoreRigth); //Devuleve el semáforo del contrario
     }
@@ -81,8 +82,8 @@ int main(int argc, char **argv)
     sem_init(&semaphoreRigth, 0, 1);
     sem_init(&semaphoreLeft, 0, 1);
 
-    int right_cars = 5;
-    int left_cars = 5;
+    int right_cars = 3;
+    int left_cars = 3;
     int left_lambda = 5;
     int right_lambda = 5;
 
@@ -170,6 +171,9 @@ int main(int argc, char **argv)
     {
         printf("Time = %f Direction = %d \n", depart_time_total[i], cars_direction[i]);
     }
+
+    printf("\n\n ** ** ** \n\n");
+    
     i = 0;
     pthread_t pthread;
     while (i < left_cars + right_cars)
