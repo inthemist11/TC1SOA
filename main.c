@@ -11,7 +11,7 @@
 sem_t semaphore;
 int state = 0;
 pthread_t last;
-int bridge_size_secs = 20;
+int bridge_size_secs = 2;
 
 
 // A normal C function that is executed as a thread
@@ -25,52 +25,65 @@ double ran_expo(double lambda, double current_time)
     return exp + current_time;
 }
 
+void a (void *direction)
+{
+    sem_wait(&semaphore);
+    if(state != direction && state != 0)
+    {
+        sem_post(&semaphore);
+        printf("%d (%d) Voy a repetir \n", pthread_self(), direction);
+        sleep(1);
+        a(direction);
+    }
+}
+
+
 //Función que ejecuta el thread
 void *thread_simulation(void *direction)
 {
-    pthread_t carId = pthread_self();
-
     printf("\n");
-    printf("NUEVO CARRO ID: %d (%d) \n", carId, direction);
+    printf("NUEVO CARRO ID: %d (%d) \n", pthread_self(), direction);
     printf("\n");
 
-    //Si el estado es diferente se espera a que esté el semaforo libre
+   //Si el estado es diferente se espera a que esté el semaforo libre
     if(state != direction && state != 0)
     {
-        printf("%d (%d) A. Voy a esperar el semáforo \n", carId, direction);
-        sem_wait(&semaphore);
-        printf("%d (%d) B. Ya esperé el semáforo y estoy libre \n", carId, direction);
-    }
-    //Si el estado es 0 agarra el semaforo y le cambia el estado
-    if(state == 0)
-    {
-        printf("%d (%d) 1. El puente está vació, voy a agarrar el semáforo \n", carId, direction);
-        sem_wait(&semaphore);
-        printf("%d (%d) 2. Aagarré el semáforo y voy a cambiar el estado \n", carId, direction);
+        printf("%d (%d) 1. Voy a esperar el semáforo \n", pthread_self(), direction);
+        
+        a(direction);
+        printf("%d (%d) 2. Ya esperé el semáforo \n", pthread_self(), direction);
         state = direction;
-        printf("%d (%d) 3. Cambié el estado \n", carId, direction);
+        sem_post(&semaphore);
+    }
+    else
+    {
+        //Si el estado es 0 agarra el semaforo y le cambia el estado
+        if(state == 0)
+        {
+            printf("%d (%d) 1. El puente está vació, voy a agarrar el semáforo \n", pthread_self(), direction);
+            sem_wait(&semaphore);
+            printf("%d (%d) 2. Aagarré el semáforo y voy a cambiar el estado \n", pthread_self(), direction);
+            state = direction;
+        }
     }
     
     //Actualiza el ultimo carro con el actual
-    printf("%d (%d) 4. Actualicé el last\n", carId, direction);
-    last = carId;
+    printf("%d (%d) 3. Actualicé el last y pasaré el puente\n", pthread_self(), direction);
+    last = pthread_self();
     //Pasa el puente
-    printf("%d (%d) 6. Pasaré al puente\n", carId, direction);
     sleep(bridge_size_secs);
-    printf("%d (%d) 7. Ya pasé el puente\n", carId, direction);
+    printf("%d (%d) 4. Ya pasé el puente\n", pthread_self(), direction);
 
     //Si es el último devuelve el estado y el semaforo
-    if (last == carId)
+    if (last == pthread_self())
     {
-        printf("%d (%d) X. Soy el último carro\n", carId, direction);
+        printf("%d (%d) 5. Soy el último carro y voy a retornar el semáforo\n", pthread_self(), direction);
         state = 0;
         sem_post(&semaphore);
-        printf("%d (%d) Y. Devolví el semáforo  \n", carId, direction);
     }else{
-        printf("%d (%d) 8. No fui el último carro\n", carId, direction);
+        printf("%d (%d) 5. No fui el último carro\n", pthread_self(), direction);
     }
     
-    printf("%d (%d) 9. Terminé el recorrido\n", carId, direction);
     return NULL;
 }
 
@@ -186,5 +199,5 @@ int main(int argc, char **argv)
         pthread_join(pthread, NULL);
         i++;
     }
-    exit(0);
+    pthread_exit(0);
 }
