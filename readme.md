@@ -1,18 +1,14 @@
-[TOCM]
-
-[TOC]
-
 ## **Tarea 1: Sincronización de "threads"** 
-del curso Sistema Operativos Avanzados, de la Maestría de Ciencias de la Computación del Tecnológico de Costa Rica.
+Del curso Sistema Operativos Avanzados, de la Maestría de Ciencias de la Computación del Tecnológico de Costa Rica.
 
-##### Integrantes:
+##### Equipo de trabajo:
 - Carvajal Barboza Nicole
 - Gonzáles Villanueva Ruben
 - López Díaz Edisson
 - Mena Kikut Otto
 - Soto Rojas Cristina
-    
-    
+
+
 # Uso del programa
 
 #### Compilación
@@ -47,14 +43,14 @@ Donde el tercero, el 6, indica el *lambda* el este/derecha, y el cuarto, el 7, e
 # No funcional en el programa
 Actualmente **todo funciona en el programa y se programó tal como se solicitó en el enunciado**.
 
+<br /><br /><br />
+
+
 
 -------------
 # Otros
-## Capturas de ejecuciones
-...
+## Ejecuciones del programa
+A continuación dos ejecuciones del programa, mostrando el comando de ejecución y capturas de pantalla del resultado.
 
-
-## Referencia al enunciado
-..
-
+### Caso 1
 
