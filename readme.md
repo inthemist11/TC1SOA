@@ -50,7 +50,7 @@ Actualmente **todo funciona en el programa y se programó tal como se solicitó 
 -------------
 # Otros
 ## Ejecuciones del programa
-A continuación dos ejecuciones del programa, mostrando el comando de ejecución y capturas de pantalla del resultado.
+A continuación dos ejecuciones del programa, mostrando el comando de ejecución y las líneas impresas en consola del resultado.
 
 ### Caso 1
 Ejecución:
@@ -246,4 +246,4 @@ Time = 25.652481 Direction = -1
 ```
 
 <br/><br/><br/><br/>
-- end line -
+_ end line _
