@@ -3,7 +3,7 @@ Del curso Sistema Operativos Avanzados, de la Maestría de Ciencias de la Comput
 
 ##### Equipo de trabajo:
 - Carvajal Barboza Nicole
-- Gonzáles Villanueva Ruben
+- González Villanueva Ruben
 - López Díaz Edisson
 - Mena Kikut Otto
 - Soto Rojas Cristina
@@ -20,8 +20,8 @@ Se utiliza el compilador de GNU, el GCC, usando la siguiente línea:
 - **-o**: Indica el nombre del archivo de salida.
 - **main**: Nombre del archivo de salida.
 - **-lpthread**: Indica que se usarán *pthreads*.
-- **-lm**: ????
-- **-lpthread**: Indica que no imprima *warnings*.
+- **-lm**: Indica que se usará *math*.
+- **-w**: Indica que no imprima *warnings*.
 
 #### Ejecución
 Se usa el archivo de salida resultante de la compilación "**main**". Para ejecutarlo es suficiente con la siguiente línea:
