@@ -24,6 +24,7 @@ double ran_expo(double lambda, double current_time)
     return exp + current_time;
 }
 
+// Main function to simulate the process to pass cars through the bridge
 void *thread_simulation(void *direction)
 {
     
@@ -32,37 +33,38 @@ void *thread_simulation(void *direction)
 
     printf("\n%d (%s) Arrived a new car! 🚙💨 \n", pthread_self(), directionSymbol);
 
-    if (state != direction && state != 0) //Entra si hay carros en dirección contraria pasando el puente
+
+    if (state != direction && state != 0) // if there are cars in the opposite direction passing the bridge
     {
         printf("%d (%s) I'll wait because bridge is in use 🔴 \n", pthread_self(), directionSymbol);
-        direction == 1 ? sem_wait(&semaphoreRigth) : sem_wait(&semaphoreLeft); //Pide el semáforo
-        direction == 1 ? sem_post(&semaphoreRigth) : sem_post(&semaphoreLeft); //Suelta el semáforo
+        direction == 1 ? sem_wait(&semaphoreRigth) : sem_wait(&semaphoreLeft); // request semaphore
+        direction == 1 ? sem_post(&semaphoreRigth) : sem_post(&semaphoreLeft); // release semaphore
         printf("%d (%s) Now is my turn, I'll prepare to pass 🟡 \n", pthread_self(), directionSymbol);
     }
-    if (state == 0) //Entra si el puente está vacío
+    if (state == 0) // if the bridge is empty
     {
         printf("%d (%s) I'm the fist, I allow the %s direction 🟢 🟢 \n", pthread_self(), directionSymbol, directionSymbol);
-        //Pide los dos semaforos
+        // request both semaphores
         sem_wait(&semaphoreRigth); 
         sem_wait(&semaphoreLeft);
-        direction == 1 ? sem_post(&semaphoreRigth) : sem_post(&semaphoreLeft);//Suelta el semáforo de la dirección de él
+        direction == 1 ? sem_post(&semaphoreRigth) : sem_post(&semaphoreLeft); // release semaphore of same direction
         state = direction;
     }
-    else //Entra si el puente está de nuestro lado
+    else // if the bridge has cars of the same direction
     {
         printf("%d (%s) It's my same direction 🟢 \n", pthread_self(), directionSymbol);
-        direction == 1 ? sem_wait(&semaphoreRigth) : sem_wait(&semaphoreLeft); //Pide el semáforo
-        direction == 1 ? sem_post(&semaphoreRigth) : sem_post(&semaphoreLeft); //Suelta el semáforo
+        direction == 1 ? sem_wait(&semaphoreRigth) : sem_wait(&semaphoreLeft); // request semaphore
+        direction == 1 ? sem_post(&semaphoreRigth) : sem_post(&semaphoreLeft); // release semaphore
     }
-    last = pthread_self(); //Actualiza el último
+    last = pthread_self(); // update the last
     printf("%d (%s) I'll pass the bridge in a row, and now I'm the last 🟢 \n", pthread_self(), directionSymbol);
-    sleep(bridge_size_secs); //Pasa el puente
+    sleep(bridge_size_secs); // pass the bridge
     printf("%d (%s) I passed the bridge 🟢 \n", pthread_self(), directionSymbol);
-    if (last == pthread_self()) //Valida si soy el último
+    if (last == pthread_self()) // validate if I am the last
     {
-        state = 0;                                                             //Devuelve el puente
+        state = 0;                                                             // return the bridge to state 0 / empty
         printf("%d (%s) I was the last, the bridge is empty 🟡 \n\n", pthread_self(), directionSymbol);
-        direction == 1 ? sem_post(&semaphoreLeft) : sem_post(&semaphoreRigth); //Devuleve el semáforo del contrario
+        direction == 1 ? sem_post(&semaphoreLeft) : sem_post(&semaphoreRigth); // release semaphore of the OTHER direction
     }
 
     return NULL;
